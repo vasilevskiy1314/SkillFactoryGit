@@ -1,0 +1,46 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+<h1>{{ post.title }}</h1>
+<h3>{{ time_now2 }}</h3>
+<hr>
+<a> {{ post.text }} </a>
+{% if post %} <!-- Если есть новости, то выводим таблицу с ними -->
+        <table>
+            <tr>
+                <td>
+                    Категория
+                </td>
+                <td>
+                    Автор
+                </td>
+                <td>
+                    Рейтинг
+                </td>
+                <td>
+                    Дата выхода
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ post.postCategory }} <!--переменные в шаблоне ничем не отличаются от переменных в Python.-->
+                </td>
+                <td>
+                    {{ post.author.authorUser }}
+                </td>
+                <td>
+                    {{ post.rating }}
+                </td>
+                <td>
+                    {{ post.dateCreation }}
+                </td>
+            </tr>
+        </table>
+    {% else %}
+        <h2>Такой новости еще нет!</h2>
+    {% endif %}
+{% endblock content %}
