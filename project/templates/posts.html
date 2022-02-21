@@ -51,16 +51,16 @@ News
                         {{ post.dateCreation }}
                     </td>
                     <td>
-                        <a href="{% url 'post_update' post.id %}"><u>Редактировать</u></a>
-                        <a href="{% url 'post_delete' post.id %}"><u> Удалить </u></a>
+                        <a href="{% url 'post_update' post.id %}"><button><u>Редактировать</u></button></a>
+                        <a href="{% url 'post_delete' post.id %}"><button><u> Удалить </u></button></a>
                     </td>
                 </tr>
             {% endfor %}
         </table>
 <p>&nbsp;</p>
 <p>Не нашли то, что искали?</p>
-<a href="{% url 'post_search' %}">Воспользуйтесь поиском</a> <br>
-<a href="{% url 'post_create' %}">Добавьте новую новость!</a> <br>
+<a href="{% url 'post_search' %}"><button>Воспользуйтесь поиском</button></a> <br>
+<a href="{% url 'post_create' %}"><button>Добавьте новую новость!</button></a> <br>
 <p>&nbsp;</p>
 {% if is_paginated %}
 

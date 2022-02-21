@@ -3,8 +3,10 @@ from django.core.paginator import Paginator
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView
 from .models import *
 from datetime import datetime
-from .filters import PostFilter  # импортируем недавно написанный фильтр
+from .filters import PostFilter
 from .forms import PostForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
 class PostsList(ListView):
@@ -30,9 +32,9 @@ class PostsList(ListView):
         return super().get(request, *args, **kwargs)
 
 
-class Search(ListView):
+class PostSearch(ListView):
     model = Post
-    template_name = 'search.html'
+    template_name = 'news_app/post_search.html'
     context_object_name = 'posts'
     ordering = ['dateCreation']
     paginate_by = 3
@@ -45,7 +47,7 @@ class Search(ListView):
 
 
 class PostDetailView(DetailView):
-    template_name = 'newspaper_app/post_detail.html'
+    template_name = 'news_app/post_detail.html'
     queryset = Post.objects.all()
 
     def get_context_data(self, **kwargs):
@@ -54,21 +56,24 @@ class PostDetailView(DetailView):
         return context
 
 
-class PostCreateView(CreateView):
-    template_name = 'newspaper_app/post_create.html'
+class PostCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    template_name = 'news_app/post_create.html'
     form_class = PostForm
+    permission_required = ('news.add_post')
 
 
-class PostUpdateView(UpdateView):
-    template_name = 'newspaper_app/post_create.html'
+class PostUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    template_name = 'news_app/post_update.html'
     form_class = PostForm
+    permission_required = ('news.change_post')
 
     def get_object(self, **kwargs):
         id = self.kwargs.get('pk')
         return Post.objects.get(pk=id)
 
 
-class PostDeleteView(DeleteView):
-    template_name = 'newspaper_app/post_delete.html'
+class PostDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    template_name = 'news_app/post_delete.html'
     queryset = Post.objects.all()
     success_url = '/posts/'
+    permission_required = ('news.delete_post')

@@ -31,6 +31,9 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="/posts/">News</a>
                     </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/authors/">Authors</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/about/">About</a>
                     </li>
@@ -53,6 +56,13 @@
                 {% endblock content %}
             </div>
         </div>
+        {% if user.is_authenticated %}
+            <p>Hi {{ user.username }}!</p>
+            <p><a href="{% url 'logout' %}"><button>Log out</button></a></p>
+        {% else %}
+            <p>You are not logged in.</p>
+            <a href="{% url 'login' %}"><button>Log In</button></a>
+        {% endif %}
         </div>
     </body>
 </html>

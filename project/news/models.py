@@ -6,12 +6,13 @@ from django.db.models import Sum
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
     ratingAuthor = models.SmallIntegerField(default=0)
+    nameAuthor = models.CharField(max_length=128)
+    descriptionAuthor = models.CharField(max_length=256)
 
     def update_rating(self):
         postRat = self.post_set.aggregate(postRating=Sum('rating'))
         pRat = 0
         pRat += postRat.get('postRating')
-
         commentRat = self.authorUser.comment_set.aggregate(commentRating=Sum('rating'))
         cRat = 0
         cRat += commentRat.get('commentRating')
@@ -21,6 +22,9 @@ class Author(models.Model):
 
     def __str__(self):
         return self.authorUser.username
+
+    def get_absolute_url(self):
+        return f'/authors/{self.id}'
 
 
 class Category(models.Model):
