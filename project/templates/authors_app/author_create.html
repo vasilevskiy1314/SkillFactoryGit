@@ -1,0 +1,13 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %} Post list {% endblock title %}
+
+{% block content %}
+<h3>Новый автор:</h3>
+        {% if user.is_authenticated %}
+            <button> <a href="http://127.0.0.1:8000/sign/upgrade/"> Хочу стать автором!</a> </button>
+        {% else %}
+            <p>Только зарегистрированные пользователи могут стать авторами!</p>
+            <a href="http://127.0.0.1:8000/accounts/signup/"><button>Регистрация</button></a>
+        {% endif %}
+{% endblock content %}
