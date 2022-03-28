@@ -10,5 +10,4 @@ urlpatterns = [
     path('pages/', include('django.contrib.flatpages.urls')),
     path('contacts/', include('django.contrib.flatpages.urls')),
     path('posts/', include('news.urls')),
-    path('authors/', include('authors.urls')),
 ]

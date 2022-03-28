@@ -6,8 +6,8 @@ from django.db.models import Sum
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
     ratingAuthor = models.SmallIntegerField(default=0)
-    nameAuthor = models.CharField(max_length=128)
-    descriptionAuthor = models.CharField(max_length=256)
+    nameAuthor = models.CharField(max_length=128, blank=True)
+    descriptionAuthor = models.CharField(max_length=256, blank=True)
 
     def update_rating(self):
         postRat = self.post_set.aggregate(postRating=Sum('rating'))
@@ -29,6 +29,7 @@ class Author(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=64, unique=True)
+    subscribers = models.ManyToManyField(User, blank=True)
 
     def __str__(self):
         return self.name

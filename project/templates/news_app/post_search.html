@@ -19,6 +19,9 @@ News
         <table>
             <thead>
                 <th>
+                    Категория
+                </th>
+                <th>
                     Заголовок
                 </th>
                 <th>
@@ -36,6 +39,11 @@ News
             </thead>
                  {% for post in filter.qs %}
                 <tr>
+                    <td>
+                        {% for i in post.postCategory.all %}
+                        {{ i.name }}
+                        {% endfor %}
+                    </td>
                     <td>
                         <a href="{% url 'post_detail' post.id %}">{{ post.title}}</a>
                     </td>

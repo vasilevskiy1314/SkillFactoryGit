@@ -1,12 +1,61 @@
-from django.shortcuts import render
-from django.core.paginator import Paginator
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView
 from .models import *
-from datetime import datetime
 from .filters import PostFilter
 from .forms import PostForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from .tasks import new_post_sub_email
+from datetime import datetime, timedelta
+from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
+from django.core.mail import EmailMultiAlternatives
+from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.shortcuts import render
+from django.core.paginator import Paginator
+
+
+class CategorysList(ListView):
+    model = Category
+    template_name = 'news_app/categorys.html'
+    context_object_name = 'categorys'
+    ordering = ['name']
+    queryset = Category.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['time_now'] = datetime.now()
+        return context
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = 'news_app/category_detail.html'
+    context_object_name = 'category'
+    queryset = Category.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['time_now'] = datetime.now()
+        return context
+
+
+@login_required
+def add_subscribe(request, pk):
+    sub_user = User.objects.get(id=request.user.pk)
+    category_object = Category.objects.get(pk=pk)
+    category_object.subscribers.add(sub_user)
+    return redirect('/posts/categorys/')
+
+
+@login_required
+def del_subscribe(request, pk):
+    sub_user = User.objects.get(id=request.user.pk)
+    category_object = Category.objects.get(pk=pk)
+    category_object.subscribers.remove(sub_user)
+    return redirect('/posts/categorys/')
 
 
 class PostsList(ListView):
@@ -14,22 +63,16 @@ class PostsList(ListView):
     template_name = 'posts.html'
     context_object_name = 'posts'
     ordering = ['-dateCreation']
-    paginate_by = 3  # поставим постраничный вывод в один элемент
+    paginate_by = 10  # поставим постраничный вывод в один элемент
     form_class = PostForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['time_now'] = datetime.now()
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
-        context['value1'] = None  # добавим ещё одну пустую переменную, чтобы на её примере посмотреть работу другого фильтра
+        context['value1'] = None
         context['form'] = PostForm()
         return context
-
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)  # создаём новую форму, забиваем в неё данные из POST-запроса
-        if form.is_valid():  # если пользователь ввёл всё правильно и нигде не ошибся, то сохраняем новый пост
-            form.save()
-        return super().get(request, *args, **kwargs)
 
 
 class PostSearch(ListView):
@@ -60,6 +103,14 @@ class PostCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     template_name = 'news_app/post_create.html'
     form_class = PostForm
     permission_required = ('news.add_post')
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            form.save()
+            sub_categoryname = Category(request.POST['postCategory'])
+            new_post_sub_email.apply_async([sub_categoryname.pk], countdown=1)
+        return redirect('/posts')
 
 
 class PostUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):

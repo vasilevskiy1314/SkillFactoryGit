@@ -45,7 +45,11 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'news', 'authors', 'sign', 'protect',
+    'news.apps.NewsConfig',
+    'authors',
+    'sign',
+    'protect',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -148,11 +152,33 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+DEFAULT_FROM_EMAIL = 'vasilevskiyak@yandex.ru'
 SITE_ID = 1
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_FORMS = {'signup': 'sign.forms.BasicSignupForm'}
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'vasilevskiyak'
+EMAIL_HOST_PASSWORD = 'Z1234567z'
+EMAIL_USE_SSL = True
+
+MANAGERS = [
+    ('reebox1314', 'reebox1314@yandex.ru'),
+    # список всех админов в формате ('имя', 'их почта')
+]
+SERVER_EMAIL = 'vasilevskiyak@yandex.ru'  # это будет у нас вместо аргумента FROM в массовой рассылке
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

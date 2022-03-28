@@ -30,8 +30,10 @@ News
                 </th>
             </tr>
             <tr>
-                <td>
-                        {{ post.categoryType }}
+                    <td>
+                        {% for i in post.postCategory.all %}
+                        {{ i.name }}
+                        {% endfor %}
                     </td>
                     <td>
                         {{ post.title|censor }}

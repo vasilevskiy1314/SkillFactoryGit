@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 
+
 @login_required
 def upgrade_to_author(request):
     user = request.user

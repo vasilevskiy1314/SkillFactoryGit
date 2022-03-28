@@ -54,6 +54,7 @@ class AuthorUpdateView(LoginRequiredMixin, UpdateView):
 class AuthorCreateView(CreateView):
     template_name = 'authors_app/author_create.html'
     form_class = AuthorForm
+    success_url = '/sign/upgrade_to_author/'
 
 
 class AuthorSearch(ListView):

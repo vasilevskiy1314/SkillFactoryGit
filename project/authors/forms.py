@@ -3,10 +3,13 @@ from news.models import Author
 
 
 class AuthorForm(ModelForm):
-    check_box = BooleanField(label='Ало, Галочка!')
+    check_box = BooleanField(label='Подтвердить!')
+
 
     class Meta:
         model = Author
         fields = ['descriptionAuthor',
+                  'nameAuthor',
                   'authorUser',
                   ]
+
